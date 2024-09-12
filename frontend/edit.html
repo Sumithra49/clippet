@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit User - User Management</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h2 class="my-4">Edit User</h2>
+      <form id="editForm">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" required />
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone No</label>
+          <input type="text" class="form-control" id="phone" required />
+        </div>
+        <div class="form-group">
+          <label for="profession">Profession</label>
+          <input type="text" class="form-control" id="profession" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+      </form>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Fetch user details from localStorage or session
+        const userId = localStorage.getItem("userId"); // Ensure userId is stored when logged in
+
+        if (!userId) {
+          alert("No user ID found. Please log in.");
+          window.location.href = "/login.html";
+          return;
+        }
+
+        const response = await fetch(`http://localhost:3000/update`);
+        if (!response.ok) {
+          alert("Failed to fetch user details");
+          window.location.href = "/login.html";
+          return;
+        }
+
+        const user = await response.json();
+        document.getElementById("name").value = user.name;
+        document.getElementById("email").value = user.email;
+        document.getElementById("phone").value = user.phone;
+        document.getElementById("profession").value = user.profession;
+      });
+
+      document
+        .getElementById("editForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const userId = localStorage.getItem("userId");
+
+          if (!userId) {
+            alert("No user ID found. Please log in.");
+            return;
+          }
+
+          const data = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value,
+            profession: document.getElementById("profession").value,
+          };
+
+          const response = await fetch(`http://localhost:3000/update`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (response.ok) {
+            alert("User updated successfully");
+            window.location.href = "/home.html";
+          } else {
+            alert("Failed to update user");
+          }
+        });
+    </script>
+  </body>
+</html>
